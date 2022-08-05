@@ -3,12 +3,19 @@
  */
 package org.intrigus.insecure;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import org.jdbi.v3.core.Jdbi;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+public class App {
+
+	public static void main(String[] args) {
+		Jdbi jdbi = Jdbi.create("jdbc:h2:mem:test");
+		String insecureSql = args[0];
+		jdbi.withHandle(handle -> handle.createCall(insecureSql));
+		jdbi.withHandle(handle -> handle.createQuery(insecureSql));
+		jdbi.withHandle(handle -> handle.createScript(insecureSql));
+		jdbi.withHandle(handle -> handle.createUpdate(insecureSql));
+		jdbi.withHandle(handle -> handle.execute(insecureSql));
+		jdbi.withHandle(handle -> handle.select(insecureSql));
+		jdbi.withHandle(handle -> handle.createBatch().add(insecureSql));
+	}
 }
